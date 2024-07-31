@@ -1,13 +1,12 @@
-import "./App.css";
+import { UserSettings } from "@pages";
 import { useProfileQuery } from "./hooks";
 
 function App() {
   const { data } = useProfileQuery();
 
   return (
-    <div>
-      {data?.address.city}
-      <h1 className="text-red-200">test</h1>
+    <div className="flex h-screen w-full items-center justify-center">
+      <UserSettings />
     </div>
   );
 }
