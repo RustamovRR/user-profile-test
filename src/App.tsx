@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
-import { INITIAL_USER_DATA } from "@constants";
 import { getUserDataFromStorage, saveUserDataToStorage } from "@utils";
 import { Spinner } from "@components";
+import { INITIAL_USER_DATA } from "@constants";
 
 const UserSettings = lazy(() => import("./pages/UserSettings"));
 

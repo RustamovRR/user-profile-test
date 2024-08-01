@@ -80,7 +80,7 @@ const useProfileForm = ({ avatar, setAvatar }: Props) => {
 
       toast.promise(updatePromise, {
         loading: "Updating profile...",
-        success: "Profile updated succesfully!",
+        success: "Profile updated successfully!",
         error: "Profile didn't update. Something went wrong!",
       });
     } catch (error) {

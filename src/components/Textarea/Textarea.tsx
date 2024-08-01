@@ -3,7 +3,7 @@ import { cn } from "../../utils";
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
-const Input: FC<TextareaProps> = ({ className, ...props }) => {
+const Textarea: FC<TextareaProps> = ({ className, ...props }) => {
   return (
     <textarea
       {...props}
@@ -15,4 +15,4 @@ const Input: FC<TextareaProps> = ({ className, ...props }) => {
   );
 };
 
-export default Input;
+export default Textarea;
