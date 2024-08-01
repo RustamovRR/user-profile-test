@@ -104,11 +104,15 @@ const UserSettings = () => {
 
   return (
     <div className="mx-auto h-full w-full flex justify-center text-white p-4 pt-10">
-      <div className="w-1/2 flex justify-between gap-8">
+      <div className="w-1/2 flex justify-between gap-8 max-md:w-full">
         <form className="flex flex-1 flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex items-center gap-8">
-            <img src={avatar || ""} alt="" className="w-24 h-24 rounded-lg object-cover" />
-            <div className="flex flex-col">
+          <div className="flex items-center gap-8 max-2xs:flex-col">
+            <img
+              src={avatar || ""}
+              alt=""
+              className="w-24 h-24 rounded-lg object-cover"
+            />
+            <div>
               <input
                 ref={photoInputRef}
                 type="file"
@@ -122,7 +126,7 @@ const UserSettings = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center justify-between gap-6 max-xs:flex-col">
             <div className="w-full">
               <label htmlFor="firstName">First name</label>
               <Input
@@ -202,7 +206,7 @@ const UserSettings = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center justify-between gap-6 max-xs:flex-col">
             <div className="w-full">
               <label htmlFor="city">City</label>
               <Input

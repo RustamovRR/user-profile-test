@@ -15,7 +15,7 @@ function App() {
   }, [userData]);
 
   return (
-    <div className="flex min-h-screen  w-full items-center justify-center bg-[rgb(17,24,39)]">
+    <div className="flex min-h-screen w-full items-center justify-center bg-[rgb(17,24,39)]">
       <Suspense fallback={<Spinner />}>
         <UserSettings />
       </Suspense>
