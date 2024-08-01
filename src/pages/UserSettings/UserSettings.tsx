@@ -1,81 +1,24 @@
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
+import { Controller } from "react-hook-form";
+import { useCountriesQuery } from "@hooks";
 import { Button, Input, Select, Spinner, Textarea } from "@components";
-import { useCountriesQuery, useProfileQuery } from "@hooks";
-import { ISelectOption, IUser } from "@types";
-import { useProfileUpdateMutation } from "@hooks";
-import { getUserDataFromStorage } from "@utils";
-import toast from "react-hot-toast";
-
-const initialState: Partial<IUser> = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  username: "",
-  bio: "",
-  country: "",
-  city: "",
-  address: "",
-};
+import { useProfileForm } from "./hooks";
 
 const UserSettings = () => {
   const photoInputRef = useRef<HTMLInputElement | null>(null);
-  const [fields, setFields] = useState(initialState);
   const [avatar, setAvatar] = useState<string | null>(null);
-  const { data: profileData, isLoading: profileDataLoading } =
-    useProfileQuery();
   const { data: countries } = useCountriesQuery();
+
   const {
-    mutateAsync: profileUpdateMutation,
-    isPending: profileUpdatePending,
-  } = useProfileUpdateMutation();
-  const { firstName, lastName, email, username, bio, country, city, address } =
-    fields;
-
-  useEffect(() => {
-    if (profileData) {
-      setFields({
-        firstName: profileData.firstName || "",
-        lastName: profileData.lastName || "",
-        email: profileData.email || "",
-        bio: profileData.bio || "",
-        country: profileData?.country || "",
-        city: profileData?.city || "",
-        address: profileData?.address || "",
-      });
-      setAvatar(profileData.avatar || "");
-    } else {
-      const userData = getUserDataFromStorage();
-      if (userData) {
-        setFields(userData);
-        setAvatar(userData.avatar);
-      }
-    }
-  }, [profileData]);
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFields((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      const updatedData = { ...fields, avatar: avatar as string };
-      const updatePromise = profileUpdateMutation(updatedData);
-
-      toast.promise(updatePromise, {
-        loading: "Updating profile...",
-        success: "Profile updated succesfully!",
-        error: "Profile didn't update. Something went wrong!",
-      });
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
+    handleSubmit,
+    errors,
+    control,
+    profileDataLoading,
+    profileUpdatePending,
+  } = useProfileForm({
+    avatar,
+    setAvatar,
+  });
 
   const handlePhotoInputClick = () => {
     photoInputRef.current?.click();
@@ -93,10 +36,14 @@ const UserSettings = () => {
     }
   };
 
-  const countryOptions = (countries || [])?.map(({ name }) => ({
-    label: name,
-    value: name,
-  })) as ISelectOption[];
+  const countryOptions = useMemo(
+    () =>
+      (countries || [])?.map(({ name }) => ({
+        label: name,
+        value: name,
+      })),
+    [countries]
+  );
 
   if (profileDataLoading) {
     return <Spinner />;
@@ -113,7 +60,7 @@ const UserSettings = () => {
               className="w-24 h-24 rounded-lg object-cover"
             />
             <div>
-              <input
+              <Input
                 ref={photoInputRef}
                 type="file"
                 accept="image/*"
@@ -129,24 +76,36 @@ const UserSettings = () => {
           <div className="flex items-center justify-between gap-6 max-xs:flex-col">
             <div className="w-full">
               <label htmlFor="firstName">First name</label>
-              <Input
-                id="firstName"
-                className="mt-1"
-                placeholder="John"
+              <Controller
                 name="firstName"
-                value={firstName}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      id="firstName"
+                      className="mt-1"
+                      placeholder="John"
+                      error={errors?.firstName?.message}
+                    />
+                  </>
+                )}
               />
             </div>
             <div className="w-full">
               <label htmlFor="lastName">Last name</label>
-              <Input
-                id="lastName"
-                className="mt-1"
-                placeholder="Wick"
+              <Controller
                 name="lastName"
-                value={lastName}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="lastName"
+                    className="mt-1"
+                    placeholder="Wick"
+                    error={errors?.lastName?.message}
+                  />
+                )}
               />
             </div>
           </div>
@@ -154,13 +113,18 @@ const UserSettings = () => {
           <div>
             <div className="w-full">
               <label htmlFor="email">Email</label>
-              <Input
-                id="email"
-                className="mt-1"
-                placeholder="johnwick@gmail.com"
+              <Controller
                 name="email"
-                value={email}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="email"
+                    className="mt-1"
+                    placeholder="johnwick@gmail.com"
+                    error={errors?.email?.message}
+                  />
+                )}
               />
             </div>
           </div>
@@ -168,13 +132,18 @@ const UserSettings = () => {
           <div>
             <div className="w-full">
               <label htmlFor="username">Username</label>
-              <Input
-                id="username"
-                className="mt-1"
-                placeholder="@johnWick"
+              <Controller
                 name="username"
-                value={username}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="username"
+                    className="mt-1"
+                    placeholder="@johnWick"
+                    error={errors?.username?.message}
+                  />
+                )}
               />
             </div>
           </div>
@@ -182,12 +151,12 @@ const UserSettings = () => {
           <div>
             <div className="w-full">
               <label htmlFor="bio">Bio</label>
-              <Textarea
-                placeholder="Bio..."
-                className="mt-1"
+              <Controller
                 name="bio"
-                value={bio}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Textarea placeholder="Bio..." className="mt-1" {...field} />
+                )}
               />
             </div>
           </div>
@@ -195,13 +164,18 @@ const UserSettings = () => {
           <div>
             <div className="w-full">
               <label htmlFor="country">Country</label>
-              <Select
-                options={countryOptions}
-                id="country"
-                className="mt-1"
+              <Controller
                 name="country"
-                value={country}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={countryOptions}
+                    id="country"
+                    className="mt-1"
+                    error={errors?.country?.message}
+                  />
+                )}
               />
             </div>
           </div>
@@ -209,24 +183,32 @@ const UserSettings = () => {
           <div className="flex items-center justify-between gap-6 max-xs:flex-col">
             <div className="w-full">
               <label htmlFor="city">City</label>
-              <Input
-                id="city"
-                className="mt-1"
-                placeholder="Tashkent"
+              <Controller
                 name="city"
-                value={city}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="city"
+                    className="mt-1"
+                    placeholder="Tashkent"
+                  />
+                )}
               />
             </div>
             <div className="w-full">
               <label htmlFor="address">Address</label>
-              <Input
-                id="address"
-                className="mt-1"
-                placeholder="Yakkasaray, st 11"
+              <Controller
                 name="address"
-                value={address}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="address"
+                    className="mt-1"
+                    placeholder="Yakkasaray, st 11"
+                  />
+                )}
               />
             </div>
           </div>
