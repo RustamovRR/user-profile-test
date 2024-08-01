@@ -15,11 +15,11 @@ const Button: FC<Props> = ({
   ...props
 }) => {
   const classNames = cn(
-    "h-10 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 duration-300",
+    "h-10 text-white font-medium rounded-lg text-sm px-5 py-2.5 mb-2 duration-300",
     {
-      "bg-blue-700 hover:bg-blue-800": buttonType === "primary",
+      "bg-green-700 hover:bg-green-800": buttonType === "primary",
       "bg-gray-700 hover:bg-gray-800": buttonType === "secondary",
-      "opacity-50 cursor-not-allowed": props.disabled,
+      "opacity-40 cursor-not-allowed": props.disabled,
     },
     className
   );
